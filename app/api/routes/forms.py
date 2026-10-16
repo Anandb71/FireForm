@@ -33,7 +33,6 @@ RECOMMENDED_MODELS = [
     "qwen2.5:3b",
     "qwen2.5:7b",
     "llama3.2:3b",
-    "mistral:7b",
 ]
 
 
@@ -130,7 +129,7 @@ def pull_model(req: ModelPullRequest):
                 f"{OLLAMA_HOST}/api/pull",
                 json={"name": req.model, "stream": True},
                 stream=True,
-                timeout=OLLAMA_PULL_TIMEOUT,
+                timeout=(10, OLLAMA_PULL_TIMEOUT),
             ) as response:
                 response.raise_for_status()
                 for chunk in response.iter_content(chunk_size=None):

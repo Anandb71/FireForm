@@ -66,7 +66,7 @@ fill:
               $ref: "../schemas/common.yaml#/ErrorResponse"
             example:
               error_code: "MODEL_NOT_INSTALLED"
-              message: "Model 'mistral:7b' is not installed in Ollama. Pull it first via POST /forms/pull."
+              message: "Model 'qwen2.5:7b' is not installed in Ollama. Pull it first via POST /forms/pull."
       "500":
         description: Form fill failed (LLM or PDF generation error)
         content:

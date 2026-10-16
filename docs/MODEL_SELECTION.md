@@ -77,6 +77,6 @@ for an `error` event:
 | `OLLAMA_HOST` | `http://localhost:11434` | Ollama server URL |
 | `OLLAMA_MODEL` | See `.env.example` | Default model |
 | `OLLAMA_TIMEOUT` | `300` | Seconds allowed for inference |
-| `OLLAMA_PULL_TIMEOUT` | `600` | Seconds allowed for model downloads |
+| `OLLAMA_PULL_TIMEOUT` | `120` | Seconds to wait without receiving progress from Ollama before giving up on a model download; not a limit on total download time. Connecting to Ollama is limited to 10 seconds. |
 
 Docker values are documented in `docker/.env.example`.

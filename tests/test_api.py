@@ -426,7 +426,6 @@ class TestFormEndpoints:
         assert body["current_model"] == "qwen2.5:1.5b"
         assert [model["name"] for model in body["models"]] == [
             "llama3.2:3b",
-            "mistral:7b",
             "qwen2.5:1.5b",
             "qwen2.5:3b",
             "qwen2.5:7b",
@@ -490,7 +489,31 @@ class TestFormEndpoints:
         assert lines[-1] == {"status": "success"}
         assert captured["kwargs"]["json"] == {"name": "llama3.2:3b", "stream": True}
         assert captured["kwargs"]["stream"] is True
-        assert captured["kwargs"]["timeout"] == 600
+        assert captured["kwargs"]["timeout"] == (10, 120)
+
+    def test_pull_model_read_timeout_does_not_append_success(self, client, monkeypatch):
+        from unittest.mock import MagicMock
+        import requests
+
+        fake_response = MagicMock()
+        fake_response.raise_for_status.return_value = None
+
+        def iter_content(*args, **kwargs):
+            yield b'{"status":"pulling"}\n'
+            raise requests.exceptions.ReadTimeout("read timed out")
+
+        fake_response.iter_content.side_effect = iter_content
+        fake_response.__enter__.return_value = fake_response
+        fake_response.__exit__.return_value = None
+        monkeypatch.setattr("app.api.routes.forms.requests.post", lambda *a, **k: fake_response)
+
+        resp = client.post(f"{API_PREFIX}/forms/pull", json={"model": "llama3.2:3b"})
+
+        assert resp.status_code == 200
+        lines = [json.loads(line) for line in resp.text.splitlines() if line.strip()]
+        assert lines[0] == {"status": "pulling"}
+        assert "error" in lines[-1]
+        assert {"status": "success"} not in lines
 
     def test_pull_model_failure(self, client, monkeypatch):
         """When Ollama is unreachable, the stream returns an error line."""
