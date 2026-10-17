@@ -18,6 +18,7 @@ from app.core.config import (
     OLLAMA_HOST,
     OLLAMA_MODEL,
     OLLAMA_PULL_TIMEOUT,
+    RECOMMENDED_MODELS,
     RETENTION_PERIOD_DAYS,
 )
 from app.services.whisper import call_whisper_asr
@@ -27,13 +28,6 @@ from app.services.form import FormService
 from app.services.form_filler.exceptions import ModelNotInstalledError
 
 router = APIRouter(prefix="/forms", tags=["forms"])
-
-RECOMMENDED_MODELS = [
-    "qwen2.5:1.5b",
-    "qwen2.5:3b",
-    "qwen2.5:7b",
-    "llama3.2:3b",
-]
 
 
 @router.post("/fill", response_model=FormFillResponse)
